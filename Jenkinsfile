@@ -54,8 +54,6 @@ pipeline {
 	    stage('Deploy to K8s Test') {
           steps{
             echo "Deployment started ..."
-            
-
           }
 	    }
 
@@ -72,16 +70,6 @@ pipeline {
             }
             }
 	    }
-
-       stage('Deploy to K8s Prod') {
-         when {
-              branch 'master'
-          }
-            steps{
-            
-
-        }	    
-      }
     }
     post {
         failure {
