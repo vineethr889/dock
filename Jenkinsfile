@@ -43,45 +43,6 @@ pipeline {
 			     }
 		    }
 	    }
-	    
-	    stage('Deploy to K8s Dev') {
-		    steps{
-			    echo "Deployment started ..."
 
-		    }
-	    }
-	    
-	    stage('Deploy to K8s Test') {
-          steps{
-            echo "Deployment started ..."
-          }
-	    }
-
-      stage('Deploy to K8s Prod - Approval') {
-         when {
-            branch 'master'
-        }
-          steps{
-           
-            script {
-              timeout(time: 1, unit: 'HOURS') {
-                input(id: "Deploy Gate", message: "Deploy to Prod?", ok: 'Deploy')
-              }
-            }
-            }
-	    }
-    }
-    post {
-        failure {
-            emailext body: 'Check console output at $BUILD_URL to view the results. \n\n ${CHANGES} \n\n -------------------------------------------------- \n${BUILD_LOG, maxLines=100, escapeHtml=false}', 
-                    to: "${EMAIL_TO}", 
-                    subject: 'Build failed in Jenkins: $PROJECT_NAME - #$BUILD_NUMBER'
-        }
-        always {
-            echo 'always'
-        }
-        success {
-            echo 'success'
-        }
     }
   }
