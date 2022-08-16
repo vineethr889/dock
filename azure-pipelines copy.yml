@@ -28,7 +28,7 @@ stages:
     steps:
       - task: Docker@2
         inputs:
-          containerRegistry: '$(containerRegistry)'
+          containerRegistry: 'ACRDocker'
           repository: '$(repository)'
           command: 'buildAndPush'
           Dockerfile: '**/Dockerfile'
@@ -36,10 +36,10 @@ stages:
             latest
             $(Build.BuildNumber)
 
-      # - task: PublishPipelineArtifact@1
-      #   inputs:
-      #     artifactName: 'manifests'
-      #     path: 'manifests'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          artifactName: 'manifests'
+          path: 'manifests'
 
 # - stage: 'Deploy'
 #   displayName: 'Deployment to Dev'
