@@ -9,7 +9,8 @@ trigger:
 - master
 
 pool:
-  name: 'Demo'
+  # name: 'Demo'
+  vmImage: ubuntu-latest
 
 variables:
   buildConfiguration: 'Release'
@@ -39,44 +40,44 @@ stages:
           artifactName: 'manifests'
           path: 'manifests'
 
-- stage: 'Deploy'
-  displayName: 'Deployment to Dev'
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy to AKS
-    pool:
-      name: 'Demo'   
-    environment: 'Dev'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-           - task: DownloadPipelineArtifact@2
-             displayName: 'Download Manifests'
-             inputs:
-                artifactName: 'manifests'
-                downloadPath: '$(System.ArtifactsDirectory)/manifests'
+# - stage: 'Deploy'
+#   displayName: 'Deployment to Dev'
+#   jobs:
+#   - deployment: Deploy
+#     displayName: Deploy to AKS
+#     pool:
+#       name: 'Demo'   
+#     environment: 'Dev'
+#     strategy:
+#       runOnce:
+#         deploy:
+#           steps:
+#            - task: DownloadPipelineArtifact@2
+#              displayName: 'Download Manifests'
+#              inputs:
+#                 artifactName: 'manifests'
+#                 downloadPath: '$(System.ArtifactsDirectory)/manifests'
 
-           - task: KubernetesManifest@0
-             displayName: Create imagePullSecret
-             inputs:
-                kubernetesServiceConnection: $(k8sconnection)
-                action: createSecret
-                secretName: $(imagePullSecret)
-                namespace: $(namespace)
-                dockerRegistryEndpoint: 'ACRDocker'
+#            - task: KubernetesManifest@0
+#              displayName: Create imagePullSecret
+#              inputs:
+#                 kubernetesServiceConnection: $(k8sconnection)
+#                 action: createSecret
+#                 secretName: $(imagePullSecret)
+#                 namespace: $(namespace)
+#                 dockerRegistryEndpoint: 'ACRDocker'
               
-           - task: KubernetesManifest@0
-             displayName: Deploy
-             inputs:
-              kubernetesServiceConnection: $(k8sconnection)
-              action: deploy
-              namespace: $(namespace)
-              manifests: |
-                $(System.ArtifactsDirectory)/manifests/deployment.yaml
-                $(System.ArtifactsDirectory)/manifests/Service.yaml
-                $(System.ArtifactsDirectory)/manifests/Ingress.yaml
-              imagePullSecrets: |
-                $(imagePullSecret)
-              arguments: '-n=walmartdev'
+#            - task: KubernetesManifest@0
+#              displayName: Deploy
+#              inputs:
+#               kubernetesServiceConnection: $(k8sconnection)
+#               action: deploy
+#               namespace: $(namespace)
+#               manifests: |
+#                 $(System.ArtifactsDirectory)/manifests/deployment.yaml
+#                 $(System.ArtifactsDirectory)/manifests/Service.yaml
+#                 $(System.ArtifactsDirectory)/manifests/Ingress.yaml
+#               imagePullSecrets: |
+#                 $(imagePullSecret)
+#               arguments: '-n=walmartdev'
   
