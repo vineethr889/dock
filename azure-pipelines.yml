@@ -9,7 +9,7 @@ trigger:
 - master
 
 pool:
-   image: 'ubuntu-latest'
+   vmImage: 'ubuntu-latest'
 
 variables:
   repository: 'bermtecpayment'
@@ -41,9 +41,7 @@ stages:
   displayName: 'Deployment to Dev'
   jobs:
   - deployment: Deploy
-    displayName: Deploy to AKS
-    pool:
-      name: 'Demo'   
+    displayName: Deploy to AKS  
     environment: 'Dev'
     strategy:
       runOnce:
