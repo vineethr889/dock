@@ -9,14 +9,12 @@ trigger:
 - master
 
 pool:
-  name: 'Demo'
+   image: 'ubuntu-latest'
 
 variables:
-  buildConfiguration: 'Release'
-  dotNetFramework: 'net6.0'
-  repository: 'walmartpayment'
-  namespace: 'walmartdev'
-  k8sconnection: 'kubewalmartdev'
+  repository: 'bermtecpayment'
+  namespace: 'bermtecpayment'
+  k8sconnection: 'k8sbermtec'
   imagePullSecret: 'test'
 
 stages:
@@ -26,7 +24,7 @@ stages:
     steps:
       - task: Docker@2
         inputs:
-          containerRegistry: 'ACRDocker'
+          containerRegistry: 'bermtecshared'
           repository: '$(repository)'
           command: 'buildAndPush'
           Dockerfile: '**/Dockerfile'
@@ -64,7 +62,7 @@ stages:
                 action: createSecret
                 secretName: $(imagePullSecret)
                 namespace: $(namespace)
-                dockerRegistryEndpoint: 'ACRDocker'
+                dockerRegistryEndpoint: 'bermtecshared'
               
            - task: KubernetesManifest@0
              displayName: Deploy
@@ -78,5 +76,5 @@ stages:
                 $(System.ArtifactsDirectory)/manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
-              arguments: '-n=walmartdev'
+              arguments: '-n=bermtecpayment'
   
