@@ -31,7 +31,7 @@ stages:
           Dockerfile: '**/Dockerfile'
           tags: |
             latest
-            $(Build.BuildId)
+            1.0.$(Build.BuildId)
 
       - task: PublishPipelineArtifact@1
         inputs:

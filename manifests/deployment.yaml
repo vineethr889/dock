@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  walmartpayment-dev
-        image:  bermtecshared.azurecr.io/bermtecpayment:latest
+        image:  bermtecshared.azurecr.io/bermtecpayment:w377364y7
         resources:
           requests:
             cpu:  100m
