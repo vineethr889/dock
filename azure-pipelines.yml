@@ -33,10 +33,10 @@ stages:
             latest
             $(Build.BuildId)
 
-      - task: PublishPipelineArtifact@1
-        inputs:
-          artifactName: 'manifests'
-          path: 'manifests'
+      # - task: PublishPipelineArtifact@1
+      #   inputs:
+      #     artifactName: 'manifests'
+      #     path: 'manifests'
 
 - stage: 'Deploy'
   displayName: 'Deployment to Dev'
@@ -48,11 +48,11 @@ stages:
       runOnce:
         deploy:
           steps:
-           - task: DownloadPipelineArtifact@2
-             displayName: 'Download Manifests'
-             inputs:
-                artifactName: 'manifests'
-                downloadPath: '$(System.ArtifactsDirectory)/manifests'
+          #  - task: DownloadPipelineArtifact@2
+          #    displayName: 'Download Manifests'
+          #    inputs:
+          #       artifactName: 'manifests'
+          #       downloadPath: '$(System.ArtifactsDirectory)/manifests'
 
            - task: KubernetesManifest@0
              displayName: Create imagePullSecret
@@ -70,9 +70,9 @@ stages:
               action: deploy
               namespace: $(namespace)
               manifests: |
-                $(System.ArtifactsDirectory)/manifests/deployment.yaml
-                $(System.ArtifactsDirectory)/manifests/Service.yaml
-                $(System.ArtifactsDirectory)/manifests/Ingress.yaml
+                **/manifests/deployment.yaml
+                **/manifests/Service.yaml
+                **/manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
               arguments: '-n=bermtecpayment'
