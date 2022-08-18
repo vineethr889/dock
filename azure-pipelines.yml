@@ -70,9 +70,9 @@ stages:
               action: deploy
               namespace: $(namespace)
               manifests: |
-                **/manifests/deployment.yaml
-                **/manifests/Service.yaml
-                **/manifests/Ingress.yaml
+                manifests/deployment.yaml
+                manifests/Service.yaml
+                manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
               arguments: '-n=bermtecpayment'
