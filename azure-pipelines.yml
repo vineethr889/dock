@@ -77,7 +77,7 @@ stages:
                 $(imagePullSecret)
               arguments: '-n=bermtecpayment'
 
-- stage: 'Deploy'
+- stage: 'Deploy_To_Test'
   displayName: 'Deployment to Test'
   dependsOn: 'Deploy'
   jobs:
@@ -104,7 +104,7 @@ stages:
              displayName: Deploy
              inputs:
               kubernetesServiceConnection: $(k8sconnection)
-              action: promote
+              action: deploy
               namespace: $(namespace)
               manifests: |
                 $(System.ArtifactsDirectory)/manifests/deployment.yaml
@@ -113,7 +113,7 @@ stages:
                 $(imagePullSecret)
               arguments: '-n=bermtecpayment'
 
-- stage: 'Deploy'
+- stage: 'Deploy_To_Prod'
   condition: and(succeeded(), eq(variables.isMain, 'true'))
   displayName: 'Deployment to Prod'
   jobs:
