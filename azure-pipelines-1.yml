@@ -1,0 +1,54 @@
+trigger:
+- develop
+- feature/*
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '42694433-9b46-481c-92db-e661c35700b7'
+  imageRepository: 'dotnetdemo'
+  containerRegistry: 'bermtecshared.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+- stage: Deploy
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+      - task: AzureRmWebAppDeployment@4
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Pay-As-You-Go(63b33cff-5a1f-40bc-8e84-ad332cd71188)'
+          appType: 'webAppContainer'
+          WebAppName: 'bermtecdev2'
+          DockerNamespace: 'bermtecshared.azurecr.io'
+          DockerRepository: '$(imageRepository)'
+          DockerImageTag: '$(tag)'
