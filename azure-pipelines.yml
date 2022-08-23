@@ -39,7 +39,7 @@ stages:
           artifactName: 'manifests'
           path: 'manifests'
 
-- stage: 'Deploy'
+- stage: 'Deploy_To_Dev'
   displayName: 'Deployment to Dev'
   jobs:
   - deployment: Deploy
@@ -95,10 +95,16 @@ stages:
                 downloadPath: '$(System.ArtifactsDirectory)/manifests'
 
            - task: Bash@3
-             displayName: 'Replace token'
+             displayName: 'Replace Deployment YAML'
              inputs:
                  targetType: 'inline'
                  script: 'sed -i "s/dev/test/g" $(System.ArtifactsDirectory)/manifests/deployment.yaml'
+            
+           - task: Bash@3
+             displayName: 'Replace Service YAML'
+             inputs:
+                 targetType: 'inline'
+                 script: 'sed -i "s/dev/test/g" $(System.ArtifactsDirectory)/manifests/service.yaml'
               
            - task: KubernetesManifest@0
              displayName: Deploy
@@ -129,7 +135,13 @@ stages:
              inputs:
                 artifactName: 'manifests'
                 downloadPath: '$(System.ArtifactsDirectory)/manifests'
-              
+
+           - task: Bash@3
+             displayName: 'Replace token'
+             inputs:
+                 targetType: 'inline'
+                 script: 'sed -i "s/dev/prod/g" $(System.ArtifactsDirectory)/manifests/deployment.yaml'
+
            - task: KubernetesManifest@0
              displayName: Deploy
              inputs:
