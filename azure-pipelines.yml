@@ -98,7 +98,7 @@ stages:
              displayName: 'Replace token'
              inputs:
                  targetType: 'inline'
-                 script: 'sed "s/dev/test/i" $(System.ArtifactsDirectory)/manifests/deployment.yaml'
+                 script: 'sed -i "s/dev/test/g" $(System.ArtifactsDirectory)/manifests/deployment.yaml'
               
            - task: KubernetesManifest@0
              displayName: Deploy
