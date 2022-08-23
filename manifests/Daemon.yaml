@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: nginx
-        image: nginx-slim:1.16.1
+        image: mongo
         ports:
         - containerPort: 80
           name: web

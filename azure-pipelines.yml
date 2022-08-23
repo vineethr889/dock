@@ -17,6 +17,7 @@ variables:
   k8sconnection: 'k8sbermtec'
   imagePullSecret: 'test'
   containerRegistry: 'bermtecshared'
+  isMain: false
 
 stages:
 - stage: 'Build'
@@ -43,7 +44,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy to AKS  
-    environment: 'Prod'
+    environment: 'Dev'
     strategy:
       runOnce:
         deploy:
@@ -62,6 +63,72 @@ stages:
                 secretName: $(imagePullSecret)
                 namespace: $(namespace)
                 dockerRegistryEndpoint: $(containerRegistry)
+              
+           - task: KubernetesManifest@0
+             displayName: Deploy
+             inputs:
+              kubernetesServiceConnection: $(k8sconnection)
+              action: deploy
+              namespace: $(namespace)
+              manifests: |
+                $(System.ArtifactsDirectory)/manifests/deployment.yaml
+                $(System.ArtifactsDirectory)/manifests/Service.yaml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              arguments: '-n=bermtecpayment'
+
+- stage: 'Deploy'
+  displayName: 'Deployment to Test'
+  dependsOn: 'Deploy'
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy to AKS  
+    environment: 'Test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+           - task: DownloadPipelineArtifact@2
+             displayName: 'Download Manifests'
+             inputs:
+                artifactName: 'manifests'
+                downloadPath: '$(System.ArtifactsDirectory)/manifests'
+
+           - task: Bash@3
+             displayName: 'Replace token'
+             inputs:
+                 targetType: 'inline'
+                 script: 'sed "s/dev/test/i" $(System.ArtifactsDirectory)/manifests/deployment.yaml'
+              
+           - task: KubernetesManifest@0
+             displayName: Deploy
+             inputs:
+              kubernetesServiceConnection: $(k8sconnection)
+              action: promote
+              namespace: $(namespace)
+              manifests: |
+                $(System.ArtifactsDirectory)/manifests/deployment.yaml
+                $(System.ArtifactsDirectory)/manifests/Service.yaml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              arguments: '-n=bermtecpayment'
+
+- stage: 'Deploy'
+  condition: and(succeeded(), eq(variables.isMain, 'true'))
+  displayName: 'Deployment to Prod'
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy to AKS  
+    environment: 'Prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+           - task: DownloadPipelineArtifact@2
+             displayName: 'Download Manifests'
+             inputs:
+                artifactName: 'manifests'
+                downloadPath: '$(System.ArtifactsDirectory)/manifests'
               
            - task: KubernetesManifest@0
              displayName: Deploy
