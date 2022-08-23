@@ -79,7 +79,6 @@ stages:
 
 - stage: 'Deploy_To_Test'
   displayName: 'Deployment to Test'
-  dependsOn: 'Deploy'
   jobs:
   - deployment: Deploy
     displayName: Deploy to AKS  
