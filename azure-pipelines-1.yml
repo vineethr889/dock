@@ -1,5 +1,9 @@
 trigger:
 - develop
+- feature/*
+- hotfix/*
+- master
+- bugfix/*
 
 pool:
   vmImage: ubuntu-latest
