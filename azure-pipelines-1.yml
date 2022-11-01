@@ -2,6 +2,10 @@ trigger:
 - main
 - master
 - develop
+- feature/*
+
+pool:
+  vmImage: ubuntu-latest
 
 variables:
   buildPlatform: 'Any CPU'
@@ -77,14 +81,12 @@ stages:
     appName: 'bermtecdev2'
   jobs:
   - deployment: 'Dev'
-    pool:
-     vmImage: ubuntu-latest
      
     environment: 'Dev'
     strategy: 
        runOnce:     
         deploy:
-          steps:   
+          steps:
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
