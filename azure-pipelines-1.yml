@@ -15,7 +15,8 @@ stages:
   jobs:
   - job: 'BuildClient'
     displayName: 'Build job'
-    vmImage: ubuntu-latest
+    pool:
+      vmImage: ubuntu-latest
 
     steps:
     # UI Layer
@@ -71,46 +72,23 @@ stages:
 
 - stage: 'DeployDev'
   displayName: 'Deploy to Dev'
+  # condition: and(succeeded(), eq(variables.isMain, 'true'))
   variables: 
-    appName: 'AS3KDemo'
+    appName: 'bermtecdev2'
   jobs:
   - deployment: 'Dev'
-    vmImage: ubuntu-latest
+    pool:
+     vmImage: ubuntu-latest
+     
     environment: 'Dev'
     strategy: 
        runOnce:     
         deploy:
-          steps:
-           - task: AzureRmWebAppDeployment@4
-             displayName: 'Deploy .NET Code to Azure App Service '
-             inputs:
+          steps:   
+          - task: AzureRmWebAppDeployment@4
+            inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Free Trial (cf12cdda-4e4c-4957-a919-d7dbc60b6fcb)'
-              appType: 'webApp'
-              WebAppName: $(appName)
-              packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
-              RuntimeStack: 'DOTNETCORE|5.0'
-
-- stage: 'DeployTest'
-  displayName: 'Deploy to Test'
-  condition: and(succeeded(), eq(variables.isMain, 'true'))
-  variables: 
-    appName: 'AS3KTest'
-  jobs:
-  - deployment: 'Test'
-    pool:
-      name: test
-    environment: 'Test'
-    strategy: 
-       runOnce:     
-        deploy:
-          steps:
-           - task: AzureRmWebAppDeployment@4
-             displayName: 'Deploy .NET Code to Azure App Service '
-             inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Free Trial (cf12cdda-4e4c-4957-a919-d7dbc60b6fcb)'
+              azureSubscription: 'Pay-As-You-Go(63b33cff-5a1f-40bc-8e84-ad332cd71188)'
               appType: 'webAppLinux'
               WebAppName: $(appName)
               packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
-              RuntimeStack: 'DOTNETCORE|5.0'
