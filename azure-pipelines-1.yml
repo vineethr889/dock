@@ -15,7 +15,8 @@ stages:
   jobs:
   - job: 'BuildClient'
     displayName: 'Build job'
-    vmImage: ubuntu-latest
+    pool:
+      vmImage: ubuntu-latest
 
     steps:
     # UI Layer
@@ -75,7 +76,9 @@ stages:
     appName: 'AS3KDemo'
   jobs:
   - deployment: 'Dev'
-    vmImage: ubuntu-latest
+    pool:
+     vmImage: ubuntu-latest
+     
     environment: 'Dev'
     strategy: 
        runOnce:     
