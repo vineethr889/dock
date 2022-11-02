@@ -81,8 +81,8 @@ stages:
     appName: 'bermtecdev2'
   jobs:
   - deployment: 'Dev'
-     
-    environment: 'Dev'
+
+    environment: 'Develop'
     strategy: 
        runOnce:     
         deploy:
@@ -94,3 +94,8 @@ stages:
               appType: 'webAppLinux'
               WebAppName: $(appName)
               packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
+        on:
+         failure:
+         - script: echo 'failure'
+         success:
+         - script: echo 'success'
