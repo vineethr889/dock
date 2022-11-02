@@ -94,8 +94,3 @@ stages:
               appType: 'webAppLinux'
               WebAppName: $(appName)
               packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
-        on:
-         failure:
-         - script: echo 'failure'
-         success:
-         - script: echo 'success'
