@@ -78,11 +78,11 @@ stages:
   displayName: 'Deploy to Dev'
   # condition: and(succeeded(), eq(variables.isMain, 'true'))
   variables: 
-    appName: 'bermtecdev2'
+    appName: 'bermtectest3'
   jobs:
-  - deployment: 'Dev'
+  - deployment: 'Test'
 
-    environment: 'Develop'
+    environment: 'Test'
     strategy: 
        runOnce:     
         deploy:
@@ -94,8 +94,24 @@ stages:
               appType: 'webAppLinux'
               WebAppName: $(appName)
               packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
-        on:
-         failure:
-         - script: echo 'failure'
-         success:
-         - script: echo 'success'
+
+- stage: 'DeployProd'
+  displayName: 'Deploy to Production'
+  # condition: and(succeeded(), eq(variables.isMain, 'true'))
+  variables: 
+    appName: 'bermtecprod'
+  jobs:
+  - deployment: 'Prod'
+
+    environment: 'Prod'
+    strategy: 
+       runOnce:     
+        deploy:
+          steps:
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Pay-As-You-Go(63b33cff-5a1f-40bc-8e84-ad332cd71188)'
+              appType: 'webAppLinux'
+              WebAppName: $(appName)
+              packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
