@@ -97,7 +97,7 @@ stages:
 
 - stage: 'DeployProd'
   displayName: 'Deploy to Production'
-  # condition: and(succeeded(), eq(variables.isMain, 'true'))
+  condition: and(succeeded(), eq(variables.isMain, 'true'))
   variables: 
     appName: 'bermtecprod'
   jobs:

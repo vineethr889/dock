@@ -8,7 +8,7 @@ RUN apt-get -y install nodejs
 COPY . ./
 RUN dotnet restore
 
-RUN dotnet build "dotnet6.csproj" -c Release
+# RUN dotnet build "dotnet6.csproj" -c Release
 
 RUN dotnet publish "dotnet6.csproj" -c Release -o publish
 
