@@ -8,9 +8,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  artifaceName: drop
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 stages:
@@ -19,99 +17,12 @@ stages:
   jobs:
   - job: 'BuildClient'
     displayName: 'Build job'
-    pool:
-      vmImage: ubuntu-latest
 
     steps:
-    # UI Layer
-    - task: Npm@1
-      displayName: 'Restore Angular Dependencies'
-      inputs:
-        command: install
-        workingDir: 'ClientApp'
-        verbose: false
-
-    - task: Npm@1
-      displayName: 'Build Angular'
-      inputs:
-        command: custom
-        workingDir: 'ClientApp'
-        verbose: false
-        customCommand: 'run build --prod'
-
-    - task: Npm@1
-      displayName: 'Test UI'
-      inputs:
-        command: custom
-        workingDir: 'ClientApp'
-        verbose: false
-        customCommand: 'run test --watch=false'
-
-    # Middle Layer
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore project dependencies'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Build the project - $(buildConfiguration)'
-      inputs:
-        command: 'build'
-        arguments: '--no-restore --configuration $(buildConfiguration)'
-        projects: '**/*.csproj'
-
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Publish the project - $(buildConfiguration)'
-      inputs:
-        command: 'publish'
-        projects: '**/*.csproj'
-        publishWebProjects: false
-        arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
-        zipAfterPublish: true
-
-    - publish: '$(Build.ArtifactStagingDirectory)'
-      artifact: $(artifaceName)
-
-- stage: 'DeployDev'
-  displayName: 'Deploy to Dev'
-  # condition: and(succeeded(), eq(variables.isMain, 'true'))
-  variables: 
-    appName: 'bermtectest3'
-  jobs:
-  - deployment: 'Test'
-
-    environment: 'Test'
-    strategy: 
-       runOnce:     
-        deploy:
-          steps:
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Pay-As-You-Go(63b33cff-5a1f-40bc-8e84-ad332cd71188)'
-              appType: 'webAppLinux'
-              WebAppName: $(appName)
-              packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
-
-- stage: 'DeployProd'
-  displayName: 'Deploy to Production'
-  condition: and(succeeded(), eq(variables.isMain, 'true'))
-  variables: 
-    appName: 'bermtecprod'
-  jobs:
-  - deployment: 'Prod'
-
-    environment: 'Prod'
-    strategy: 
-       runOnce:     
-        deploy:
-          steps:
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'Pay-As-You-Go(63b33cff-5a1f-40bc-8e84-ad332cd71188)'
-              appType: 'webAppLinux'
-              WebAppName: $(appName)
-              packageForLinux: '$(Pipeline.Workspace)/$(artifaceName)/$(buildConfiguration)/*.zip'
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'bermtecshared'
+          repository: 'dotnetdemo'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+  
