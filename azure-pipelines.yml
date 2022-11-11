@@ -16,8 +16,9 @@ variables:
   dotNetFramework: 'net6.0'
   repository: 'dotnetdemo'
   namespace: 'bermtec'
-  k8sconnection: 'kubetest'
+  k8sconnection: 'k8sbermtec'
   imagePullSecret: 'test'
+  containerRegistry: 'bermtecacrshared.azurecr.io'
 
 stages:
 - stage: 'Build'
@@ -43,9 +44,7 @@ stages:
   displayName: 'Deployment to Dev'
   jobs:
   - deployment: Deploy
-    displayName: Deploy to AKS
-    pool:
-      name: 'Demo'   
+    displayName: Deploy to AKS 
     environment: 'Dev'
     strategy:
       runOnce:
@@ -78,5 +77,6 @@ stages:
                 $(System.ArtifactsDirectory)/manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
-              arguments: '-n=bermtec'
+              containers: |
+                $(containerRegistry)/$(repository):$(Build.BuildNumber)
   
