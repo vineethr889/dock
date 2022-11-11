@@ -9,14 +9,14 @@ trigger:
 - master
 
 pool:
-  name: 'Demo'
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
   dotNetFramework: 'net6.0'
-  repository: 'walmartpayment'
-  namespace: 'walmartdev'
-  k8sconnection: 'kubewalmartdev'
+  repository: 'dotnetdemo'
+  namespace: 'bermtec'
+  k8sconnection: 'kubetest'
   imagePullSecret: 'test'
 
 stages:
@@ -78,5 +78,4 @@ stages:
                 $(System.ArtifactsDirectory)/manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
-              arguments: '-n=walmartdev'
   

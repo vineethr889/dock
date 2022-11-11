@@ -5,3 +5,4 @@ metadata:
   namespace: default
 data:
   key: DB_HOST
+  value: ""
