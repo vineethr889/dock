@@ -45,7 +45,7 @@ stages:
   - deployment: Deploy
     displayName: Deploy to AKS
     pool:
-      vmImage: 'ubuntu-latest'   
+      name: 'Demo'   
     environment: 'Dev'
     strategy:
       runOnce:
@@ -78,4 +78,5 @@ stages:
                 $(System.ArtifactsDirectory)/manifests/Ingress.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
+              arguments: '-n=bermtec'
   

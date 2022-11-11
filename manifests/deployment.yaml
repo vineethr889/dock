@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name:  walmartpayment-dev
-        image:  bermtecacrshared.azurecr.io/dotnetdemo:2.0.0
+        image:  bermtecacrshared.azurecr.io/dotnetdemo:latest
         resources:
           requests:
             cpu:  100m
